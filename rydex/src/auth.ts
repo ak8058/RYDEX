@@ -21,8 +21,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
       async authorize(credentials, request) {
-        const email = credentials.email;
-        const password = credentials.password as string;
+        const email = credentials?.email as string;
+        const password = credentials?.password as string;
         if (!email || !password) {
           throw Error("missing credentials");
         }
@@ -59,7 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
           });
         }
-        user.id = dbUser._id;
+        user.id = dbUser._id.toString();
         user.role = dbUser.role;
       }
       return true;
