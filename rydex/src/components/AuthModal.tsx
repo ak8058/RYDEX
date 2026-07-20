@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type propType = {
   open: boolean;
@@ -33,6 +34,7 @@ function AuthModal({ open, onClose }: propType) {
   const [showPassword, setShowPassword] = useState(false);
 
   const session = useSession();
+  const router = useRouter();
   console.log(session);
 
   const handleSignUp = async () => {
@@ -44,7 +46,7 @@ function AuthModal({ open, onClose }: propType) {
         password,
       });
       setErr("");
-      setStep("login");
+      setStep("otp");
       setLoading(false);
     } catch (error: any) {
       setLoading(false);
@@ -53,14 +55,27 @@ function AuthModal({ open, onClose }: propType) {
   };
 
   const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setErr("Email and password are required");
+      return;
+    }
     setLoading(true);
+    setErr("");
     const res = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
+
     setLoading(false);
+    if (res?.error) {
+      setErr(res?.error || "Invalid email or password");
+      return;
+    }
     console.log(res);
+    onClose();
+    router.push("/"); // Home page
+    router.refresh(); // Session refresh
   };
 
   const handleGoogleLogin = async () => {
@@ -77,6 +92,24 @@ function AuthModal({ open, onClose }: propType) {
 
     if (value && index < otp.length - 1) {
       document.getElementById(`otp-${index + 1}`)?.focus();
+    }
+  };
+
+  const handleVerifyEmail = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.post("/api/auth/verify-email", {
+        email,
+        otp: otp.join(""),
+      });
+      console.log(data);
+      setOtp(["", "", "", "", "", ""]);
+      setErr("");
+      setStep("login");
+      setLoading(false);
+    } catch (error: any) {
+      setLoading(false);
+      setErr(error.response.data.message ?? "something went wrong");
     }
   };
 
@@ -241,7 +274,11 @@ function AuthModal({ open, onClose }: propType) {
                               )}
                             </button>
                           </div>
-
+                          {err && (
+                            <p className="text-red-400 text-xs font-medium pl-2">
+                              *{err}
+                            </p>
+                          )}
                           <button
                             className="w-full py-4 mt-2 rounded-full bg-white text-black text-sm font-bold tracking-wide hover:bg-gray-200 active:scale-[0.98] transition-all flex justify-center items-center shadow-lg shadow-white/5"
                             onClick={handleLogin}
@@ -390,7 +427,7 @@ function AuthModal({ open, onClose }: propType) {
                           Verify Email
                         </h2>
                         <p className="text-sm text-gray-400 mt-2 mb-8">
-                          We've sent a code to {"anil19062004"}
+                          We've sent a code to {""}
                           <span className="text-white font-semibold">
                             {email}
                           </span>
@@ -412,7 +449,15 @@ function AuthModal({ open, onClose }: propType) {
                           ))}
                         </div>
 
-                        <button className="w-full py-4 mt-8 rounded-full bg-white text-black text-sm font-bold tracking-wide hover:bg-gray-200 active:scale-[0.98] transition-all flex justify-center items-center shadow-lg shadow-white/5">
+                        {err && (
+                          <p className="text-red-400 text-xs font-medium pl-2 mt-1.5">
+                            *{err}
+                          </p>
+                        )}
+                        <button
+                          className="w-full py-4 mt-8 rounded-full bg-white text-black text-sm font-bold tracking-wide hover:bg-gray-200 active:scale-[0.98] transition-all flex justify-center items-center shadow-lg shadow-white/5"
+                          onClick={handleVerifyEmail}
+                        >
                           {!loading ? (
                             "Verify & Create Account"
                           ) : (

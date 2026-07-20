@@ -23,13 +23,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials, request) {
         const email = credentials?.email as string;
         const password = credentials?.password as string;
-        if (!email || !password) {
-          throw Error("missing credentials");
+        if (!email?.trim() || !password?.trim()) {
+          throw new Error("Email and password are required");
         }
+
         await connectDb();
         const user = await User.findOne({ email });
         if (!user) {
           throw Error("user doesn't exist!");
+        }
+        if (!user.isEmailVerified) {
+          throw new Error("Please verify your email first");
         }
         const isMatchPass = await bcrypt.compare(password, user.password);
         if (!isMatchPass) {
