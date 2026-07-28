@@ -1,9 +1,22 @@
 "use client";
+import { isCloudinaryPdf, pdfPageUrl } from "@/lib/docUrl";
 import React from "react";
 
-function DocPreview({ label, url }: any) {
-  const isImage = url?.match(/\.(jpg|jpeg|png|webp)$/i);
-  const isPdf = url?.endsWith(".pdf");
+type DocPreviewProps = {
+  label: string;
+  /** Cloudinary URL of the uploaded document, if any. */
+  url?: string | null;
+  /** Route of the full-document viewer, opened in a new tab. */
+  href: string;
+};
+
+function DocPreview({ label, url, href }: DocPreviewProps) {
+  const isImage = /\.(jpg|jpeg|png|webp)$/i.test(url || "");
+  const isPdf = isCloudinaryPdf(url);
+
+  // Cloudinary blocks delivery of the PDF itself, so the thumbnail is page 1
+  // rendered as a JPEG derivative.
+  const thumb = isPdf && url ? pdfPageUrl(url, 1, 600) : url || undefined;
 
   return (
     <div className="bg-slate-800/40 rounded-2xl border border-slate-700/50 overflow-hidden shadow-sm transition-all hover:border-slate-600/50">
@@ -18,26 +31,32 @@ function DocPreview({ label, url }: any) {
           </span>
         )}
 
-        {isImage && (
-          <img
-            src={url}
-            className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
-            alt={label}
-          />
+        {(isImage || isPdf) && (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full h-full"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={thumb}
+              className="w-full h-full object-cover object-top opacity-90 hover:opacity-100 transition-opacity"
+              alt={label}
+            />
+          </a>
         )}
 
         {isPdf && (
-          <iframe
-            src={url}
-            className="w-full h-full opacity-90"
-            title={label}
-          />
+          <span className="absolute top-2 right-2 text-[10px] font-semibold uppercase tracking-wide bg-slate-900/80 text-slate-300 px-2 py-1 rounded-md pointer-events-none">
+            PDF
+          </span>
         )}
       </div>
 
       {url && (
         <a
-          href={url}
+          href={href}
           target="_blank"
           rel="noopener noreferrer"
           className="block text-center text-xs py-3 font-semibold text-purple-400 hover:text-purple-300 hover:bg-slate-800/60 transition-colors border-t border-slate-700/50"
