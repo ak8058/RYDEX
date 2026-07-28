@@ -16,7 +16,10 @@ export async function proxy(req: NextRequest) {
   if (PUBLIC_ROUTES.includes(pathname)) {
     return NextResponse.next();
   }
-  if (pathname.startsWith("/api/auth")) {
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/footer/newsletter")
+  ) {
     return NextResponse.next();
   }
 
@@ -38,6 +41,7 @@ export async function proxy(req: NextRequest) {
     if (pathname.startsWith("/partner/onboarding")) {
       return NextResponse.next();
     }
+
     if (role != "partner") {
       return NextResponse.redirect(new URL("/", req.url));
     }

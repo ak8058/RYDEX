@@ -66,7 +66,7 @@ const Nav = () => {
             </Link>
 
             <Link
-              href="/"
+              href="/partner/onboarding/vehicle"
               onClick={() => setProfileOpen(false)}
               className="w-full flex items-center gap-3 px-3 py-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer text-sm font-medium group"
             >

@@ -17,8 +17,8 @@ function HeroSection({ onAuthRequired }: { onAuthRequired: () => void }) {
         style={{ backgroundImage: "url('/heroImage.jpg')" }}
       />
 
-      {/* 2. Premium Gradient Overlay  */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-[#0a0a0a]" />
+      {/* 2. Overlay  */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/30 to-[#0a0a0a]/60" />
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 text-center">
         {/* 3. Heading*/}

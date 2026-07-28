@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { email } = await req.json();
 
     // 1. Check if email is provided
-    if (!email) {
+    if (email === undefined || !email) {
       return NextResponse.json(
         { message: "Email is required" },
         { status: 400 },
