@@ -166,14 +166,20 @@ function page() {
             icon={<FileText size={18} className="text-purple-400" />}
           >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <DocPreview label={"Aadhaar"} url={partnerDocs?.aadharUrl} />
+              <DocPreview
+                label={"Aadhaar"}
+                url={partnerDocs?.aadharUrl}
+                href={`/admin/reviews/partner/${id}/documents/aadhar`}
+              />
               <DocPreview
                 label={"Driving License"}
                 url={partnerDocs?.licenseUrl}
+                href={`/admin/reviews/partner/${id}/documents/license`}
               />
               <DocPreview
                 label={"Registration Certificate"}
                 url={partnerDocs?.rcUrl}
+                href={`/admin/reviews/partner/${id}/documents/rc`}
               />
             </div>
           </AnimatedCard>
